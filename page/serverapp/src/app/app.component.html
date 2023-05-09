@@ -1,0 +1,179 @@
+<form #osobaVWForm="ngForm" (ngSubmit)="filterOsobas(osobaVWForm)">
+  <div class="container">
+    <div class="row row-cols-5">
+
+      <div class="col card card-body">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" ngModel name="name" class="form-control">
+        </div>
+      </div>
+      <div class="col card card-body">
+        <div class="form-group">
+          <label>Surname</label>
+          <input type="text" ngModel name="surname" class="form-control">
+        </div>
+      </div>
+      <div class="col card card-body">
+        <div class="form-group">
+          <label>Home Phone</label>
+          <input type="text" ngModel name="homePhone" class="form-control">
+        </div>
+      </div>
+      <div class="col card card-body">
+        <div class="form-group">
+          <label>Office Phone</label>
+          <input type="text" ngModel name="officePhone" class="form-control">
+        </div>
+      </div>
+      <div class="col card card-body">
+        <div class="form-group">
+          <label>e-mail</label>
+          <input type="text" ngModel name="email" class="form-control">
+        </div>
+
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success pull-right">
+      <span>Search</span>
+    </button>
+  </div>
+</form>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.0/css/boxicons.min.css"
+  integrity="sha512-pVCM5+SN2+qwj36KonHToF2p1oIvoU3bsqxphdOIWMYmgr4ZqD3t5DjKvvetKhXGc/ZG5REYTT6ltKfExEei/Q=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
+  integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+
+<div class="container">
+  <div class="row align-items-center">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <h5 class="card-title">List of osoba<span class="text-muted fw-normal ms-2"></span></h5>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 mb-3">
+        <div>
+          <a href="#addOsobaModal" data-bs-toggle="modal" data-toggle="modal" data-bs-target=".add-new"
+            class="btn btn-primary"><i class="bx bx-plus me-1"></i> Add New</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="">
+        <div class="table-responsive">
+          <table id="table-osobas" class="table project-list-table table-nowrap align-middle table-borderless">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Home phone</th>
+                <th scope="col">Office phone</th>
+                <th scope="col">Email</th>
+                <th scope="col" style="width: 200px;">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="let osoba of osobas; let i = index">
+              <tr>
+                <td>
+                  <img [src]="osoba.photoOfAPerson" alt="" class="avatar-sm rounded-circle me-2" />
+                  <a href="#" class="text-body">{{osoba.name + ' ' + osoba.surname}}</a>
+                </td>
+                <td><span class="badge badge-soft-success mb-0">{{ osoba.homePhone }}</span></td>
+                <td>{{ osoba.officePhone }}</td>
+                <td>{{ osoba.email }}</td>
+                <td>
+                  <ul class="list-inline mb-0">
+                    <li class="list-inline-item">
+                      <a href="#addOsobaModal" data-bs-toggle="modal" data-toggle="modal" data-bs-target=".add-new"
+                        data-bs-placement="top" title="Edit" (click)="preFillOsobaForm(osoba, false)"
+                        class="px-2 text-primary"><i class="bx bx-pencil font-size-18"></i></a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"
+                        class="px-2 text-danger" (click)="onDeleteOsoba(osoba, i)"><i
+                          class="bx bx-trash-alt font-size-18"></i></a>
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add osoba Modal HTML -->
+<div id="addOsobaModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form #osobaForm="ngForm" (ngSubmit)="onCreateUpdateOsoba(osobaForm)">
+        <div class="modal-header">
+          <h4 class="modal-title"><span *ngIf="!(isEditing$ | async)">Edit osoba</span><span *ngIf="isEditing$ | async">Add osoba</span></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="reset()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+              <div class="form-group">
+                <label>Name</label>
+                <input type="text" ngModel name="name" class="form-control" required>
+              </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+              <div class="form-group">
+                <label>Surname</label>
+                <input type="text" ngModel name="surname" class="form-control" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+              <div class="form-group">
+                <label>Home Phone</label>
+                <input type="text" ngModel name="homePhone" class="form-control" required>
+              </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+              <div class="form-group">
+                <label>Office Phone</label>
+                <input type="text" ngModel name="officePhone" class="form-control" required>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>e-mail</label>
+            <input type="text" ngModel name="email" #emailField="ngModel" class="form-control" required
+              pattern="^\S*[@]\S*[.]\S*$">
+          </div>
+          <div class="help-block m-1" *ngIf="!emailField.valid && (emailField.touched || emailField.dirty)">
+            <small>Invalid Email</small>
+          </div>
+          <div class="form-group">
+            <input id="file" name="file" type="file" accept="image/*" class="file-input"
+              (change)="onUploadFile($any($event).target.files)" placeholder="Upload File">
+            <div id="preview" style="overflow-x: auto; white-space: nowrap;"></div>
+          </div>
+        </div>
+        <input type="hidden" id="version" ngModel name="id" value="id" />
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning" id="closeModal" data-dismiss="modal" (click)="reset()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-success">
+            <span *ngIf="!(isEditing$ | async)">Edit</span>
+            <span *ngIf="isEditing$ | async">Add</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
