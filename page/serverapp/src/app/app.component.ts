@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   private byteArray: any;
 
   /* https://www.tektutorialshub.com/angular/how-to-set-value-in-template-driven-forms-in-angular/ */
-  @ViewChild('osobaForm'/*, null*/) osobaForm: NgForm;
+  @ViewChild('osobaForm') osobaForm: NgForm;
   @ViewChild('osobaVWForm') osobaVWForm: NgForm;
 
   constructor(private serverService: OsobaService) { }
@@ -33,7 +33,6 @@ export class AppComponent implements OnInit {
   onGetOsobas(): void {
     this.serverService.getOsobas().subscribe({
       next: (response) => {
-        console.table(response);
         this.osobas = response;
       },
       error: (error: any) => console.log(error),
@@ -47,11 +46,9 @@ export class AppComponent implements OnInit {
       this.byteArray = (this.byteArray as string).substring(22, (this.byteArray as string).length);
     }
     osoba_.photoOfAPerson = this.byteArray;
-    console.log('osoba_', osoba_);
     if (osoba_.id === null || osoba_.id === 0 || osoba_.id.toString() === '') {
       this.serverService.createOsoba(osoba_).subscribe({
         next: (response) => {
-          console.table(response);
           this.osobas.push(response);
         },
         error: (error: any) => console.log(error),
@@ -60,8 +57,18 @@ export class AppComponent implements OnInit {
     } else {
       this.serverService.updateOsoba(osoba_).subscribe({
         next: (response) => {
-          console.log(response);
-          this.onGetOsobas();
+          this.osobas = this.osobas.map(item => {
+            if (item.id === osoba_.id) {
+              item.id = osoba_.id;
+              item.name = osoba_.name;
+              item.surname = osoba_.surname;
+              item.homePhone = osoba_.homePhone;
+              item.officePhone = osoba_.officePhone;
+              item.email = osoba_.email;
+              item.photoOfAPerson = 'data:image/png;base64,' + osoba_.photoOfAPerson;
+            }
+            return item;
+          });
         },
         error: (error: any) => console.log(error),
         complete: () => console.log('Done updating osoba')
@@ -98,7 +105,6 @@ export class AppComponent implements OnInit {
     let osobaVM = osobaVWForm.value as OsobaVM;
     this.serverService.findOsobaFilter(osobaVM).subscribe({
       next: (response) => {
-        console.table(response);
         this.osobas = response;
       },
       error: (error: any) => console.log(error),
@@ -119,7 +125,6 @@ export class AppComponent implements OnInit {
 
   async onUploadFile(files: File[]): Promise<void> {
     for (const file of files) {
-      console.log(file);
       this.file = file;
     }
     this.byteArray = await fileToByteArray(this.file);
